@@ -1,42 +1,68 @@
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <math.h>
-// ax^2+bx+c=0
-class PT_bac2 {
-public:
-	float a;
-	float b;
-	float c;
-	PT_bac2() {
-		a = b = c = 0;
-	}
-	PT_bac2(float a, float b, float c) {
-		this->a = a;
-		this->b = b;
-		this->c = c;
-	}
-	void NghiemcuaPT(float a, float b, float c) {
-		if (a == 0) {
-			printf("Phuong trinh co 1 nghiem duy nhat: %f.1f", (-c) / b);
-		}
-		else {
-			float delta = (b * b) - (4 * a * c);
-			if (delta > 0) {
-				float x1 = (-b + sqrt(delta)) / (2*a);
-				float x2= (-b - sqrt(delta)) / (2*a);
-				printf("Phuong trinh co 2 nghiem phan biet x1 x2: %.1f\t%.1f", x1, x2);
-			}
-			else if (delta == 0) {
-				float x = (-b) / (2 * a);
-				printf("Phuong trinh co 1 nghiem chung %.1f", x);
-			}
-			else {
-				printf("Phuong trinh vo nghiem");
-			}
-		}
-	}
-};
-int main() {
-	PT_bac2 A;
-	A.NghiemcuaPT(1, 4, 2);
-	return 0;
+#include <string.h>
+#include <stdlib.h>
+typedef struct {
+    char light;
+    char fan;
+    char motor;
+}smartHome_t;
+
+int Light_Mode(char data[],char x[]) {
+    int n = 0;
+    const char* search = "\"light\": \"";
+    char* find = strstr(data, search) + strlen(search);
+    char length = 0;
+    while (find[length++] != '"');
+    char condition[4] = { 0 };
+    memcpy(condition, find, length - 1);
+    if (strcmp(condition, x) == 0)
+        n = 1;
+    else
+        n = 0;
+    return n;
+}
+int Fan_Mode(char data[], char x[]) {
+    int n = 0;
+    const char* search = "\"fan\": \"";
+    char* find = strstr(data, search) + strlen(search);
+    char length = 0;
+    while (find[length++] != '"');
+    char condition[4] = { 0 };
+    memcpy(condition, find, length - 1);
+    if (strcmp(condition, x) == 0)
+        n = 1;
+    else
+        n = 0;
+    return n;
+}
+
+int Motor_Mode(char data[], char x[]) {
+    int n = 0;
+    const char* search = "\"motor\": \"";
+    char* find = strstr(data, search) + strlen(search);
+    char length = 0;
+    while (find[length++] != '"');
+    char condition[4] = { 0 };
+    memcpy(condition, find, length - 1);
+    if (strcmp(condition, x) == 0)
+        n = 1;
+    else
+        n = 0;
+    return n;
+}
+
+int main()
+{   
+    smartHome_t device = { 0 };
+    char data[2048] = { 0 };
+    char x[] = "on";
+    printf("Enter data: ");
+    fgets(data, sizeof(data), stdin);
+    // DATA: HTTP1.1 200 OK {"light": "on","fan": "off","motor": "off"}
+    device.light = Light_Mode(data, x);
+    device.fan = Fan_Mode(data, x);
+    device.motor = Motor_Mode(data, x);
+    printf("Light: %d\nFan: %d\nMotor: %d", device.light, device.fan, device.motor);
+    return 0;
 }
